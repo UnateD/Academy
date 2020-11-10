@@ -9,7 +9,7 @@ class MovieDetailsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         //todo
         //layout with constraints
-        //setContentView(R.layout.activity_movie_details_contraint)
+        //setContentView(R.layout.activity_movie_details_constraint)
         //or without constraint layout
         setContentView(R.layout.activity_movie_details)
     }
