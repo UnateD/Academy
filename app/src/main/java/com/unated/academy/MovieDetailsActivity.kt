@@ -7,6 +7,10 @@ class MovieDetailsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //todo
+        //layout with constraints
+        //setContentView(R.layout.activity_movie_details_contraint)
+        //or without constraint layout
         setContentView(R.layout.activity_movie_details)
     }
 
