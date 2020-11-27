@@ -13,4 +13,5 @@
     <color name="colorDarkGrey">#6D6D80</color>
     <color name="colorWhite70">#B3FFFFFF</color>
     <color name="colorLightGreyName">#D8D8D8</color>
+    <color name="colorDuration">#565665</color>
 </resources>
