@@ -12,7 +12,7 @@ import com.unated.academy.replaceFragment
 class MainActivity : AppCompatActivity(), NavigationListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_main) 
 
         if(savedInstanceState == null) {
             addFragment(R.id.container, FragmentMoviesList())
