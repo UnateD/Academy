@@ -2,14 +2,14 @@ package com.unated.academy.activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.unated.academy.NavigationListener
+import androidx.fragment.app.Fragment
 import com.unated.academy.R
-import com.unated.academy.addFragment
 import com.unated.academy.fragment.FragmentMoviesDetails
 import com.unated.academy.fragment.FragmentMoviesList
-import com.unated.academy.replaceFragment
+import com.unated.academy.interfaces.NavigationListener
 
-class MainActivity : AppCompatActivity(), NavigationListener {
+class MainActivity : AppCompatActivity(),
+    NavigationListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main) 
@@ -19,7 +19,20 @@ class MainActivity : AppCompatActivity(), NavigationListener {
         }
     }
 
-    override fun goToDetails() {
-        replaceFragment(R.id.container, FragmentMoviesDetails())
+    override fun goToDetails(id: Int) {
+        replaceFragment(R.id.container, FragmentMoviesDetails.newInstance(id))
+    }
+
+    override fun goToMain() {
+        popFragment()
     }
 }
+
+fun AppCompatActivity.popFragment() = supportFragmentManager.popBackStack()
+
+fun AppCompatActivity.replaceFragment(container: Int, fragment: Fragment) =
+    supportFragmentManager.beginTransaction().addToBackStack(null).replace(container, fragment)
+        .commit()
+
+fun AppCompatActivity.addFragment(container: Int, fragment: Fragment) =
+    supportFragmentManager.beginTransaction().add(container, fragment).commit()
