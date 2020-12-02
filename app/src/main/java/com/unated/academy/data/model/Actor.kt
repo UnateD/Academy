@@ -1,4 +1,4 @@
-package com.unated.academy.model
+package com.unated.academy.data.model
 
 data class Actor(
     val movieId: Int,

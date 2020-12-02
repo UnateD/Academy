@@ -1,15 +1,21 @@
 package com.unated.academy.domain
 
 import com.unated.academy.R
-import com.unated.academy.model.Actor
-import com.unated.academy.model.Movie
+import com.unated.academy.data.model.Actor
+import com.unated.academy.data.model.Movie
 
-class DataSource {
+fun provideDataSource(): DataSource = DataSourceImpl()
 
-    fun getMovies(): ArrayList<Movie> {
+interface DataSource {
+    fun getMovies(): ArrayList<Movie>
+    fun getMovieById(id: Int): Movie?
+}
+
+private class DataSourceImpl : DataSource {
+    override fun getMovies(): ArrayList<Movie> {
         return arrayListOf(
             Movie(
-                "Avengers: End Game".hashCode(),
+                id = "Avengers: End Game".hashCode(),
                 smallCoverImg = R.drawable.bg_small_avengers,
                 fullCoverImg = R.drawable.header,
                 genre = "Action, Adventure, Drama",
@@ -23,7 +29,7 @@ class DataSource {
                 actors = getActors("Avengers: End Game".hashCode())
             ),
             Movie(
-                "Tenet".hashCode(),
+                id = "Tenet".hashCode(),
                 smallCoverImg = R.drawable.bg_small_tenet,
                 fullCoverImg = R.drawable.bg_tenet,
                 genre = "Action, Sci-Fi, Thriller ",
@@ -37,7 +43,7 @@ class DataSource {
                 actors = getActors("Tenet".hashCode())
             ),
             Movie(
-                "Black Widow".hashCode(),
+                id = "Black Widow".hashCode(),
                 smallCoverImg = R.drawable.bg_small_widow,
                 fullCoverImg = R.drawable.bg_widow_large,
                 genre = "Action, Adventure, Sci-Fi",
@@ -51,7 +57,7 @@ class DataSource {
                 actors = getActors("Black Widow".hashCode())
             ),
             Movie(
-                "Wonder Woman 1984".hashCode(),
+                id = "Wonder Woman 1984".hashCode(),
                 smallCoverImg = R.drawable.bg_small_ww,
                 fullCoverImg = R.drawable.bg_ww,
                 genre = "Action, Adventure, Fantasy",
@@ -67,7 +73,7 @@ class DataSource {
         )
     }
 
-    fun getMovieById(id: Int): Movie? = getMovies().find { it.id == id }
+    override fun getMovieById(id: Int): Movie? = getMovies().find { it.id == id }
 
     private fun getActors(): ArrayList<Actor> {
         return arrayListOf(

@@ -1,4 +1,4 @@
-package com.unated.academy.interfaces
+package com.unated.academy.presentation
 
 interface NavigationListener {
 
