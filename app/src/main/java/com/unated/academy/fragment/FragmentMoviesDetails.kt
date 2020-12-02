@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RatingBar
 import android.widget.TextView
@@ -24,6 +25,11 @@ class FragmentMoviesDetails : Fragment() {
         if(context is NavigationListener){
             navigationListener = context
         }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        navigationListener = null
     }
 
     override fun onCreateView(
@@ -51,6 +57,7 @@ class FragmentMoviesDetails : Fragment() {
         val rbRating: RatingBar? = view?.findViewById(R.id.rb_rating)
         val tvStoryline: TextView? = view?.findViewById(R.id.tv_storyline)
         val rvActors: RecyclerView? = view?.findViewById(R.id.rv_actors)
+        val ivHeader: ImageView? = view?.findViewById(R.id.iv_header)
 
         DataSource().getMovieById(movieId)?.let { movie ->
             var adapter = ActorsAdapter(movie.actors)
@@ -62,6 +69,7 @@ class FragmentMoviesDetails : Fragment() {
                 context?.getString(R.string.title_movie_reviews_count, movie.reviewsCount)
             rbRating?.rating = movie.rating
             tvStoryline?.text = movie.storyline
+            ivHeader?.setImageResource(movie.fullCoverImg)
         }
     }
 

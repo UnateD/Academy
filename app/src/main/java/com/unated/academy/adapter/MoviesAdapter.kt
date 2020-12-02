@@ -45,29 +45,26 @@ class MoviesAdapter(var listener: (Int) -> Unit) :
         private val tvTitle: TextView = itemView.findViewById(R.id.tv_title)
         private val tvDuration: TextView = itemView.findViewById(R.id.tv_duration)
 
-        fun bind(data: Any) {
-            if (data is Movie) {
-                ivCover.setImageResource(data.smallCoverImg)
-                ivFavorite.setImageResource(
-                    when (data.isFavorite) {
-                        true -> R.drawable.ic_fav_selected
-                        false -> R.drawable.ic_fav_not_selected
-                    }
-                )
-                tvAge.text = data.ageRating
-                tvGenre.text = data.genre
-                tvReviews.text =
-                    context.getString(R.string.title_movie_reviews_count, data.reviewsCount)
-                rbRating.rating = data.rating
-                tvTitle.text = data.title
-                tvDuration.text = context.getString(R.string.title_movie_duration, data.duration)
-            }
+        fun bind(data: Movie) {
+            ivCover.setImageResource(data.smallCoverImg)
+            ivFavorite.setImageResource(
+                when (data.isFavorite) {
+                    true -> R.drawable.ic_fav_selected
+                    false -> R.drawable.ic_fav_not_selected
+                }
+            )
+            tvAge.text = data.ageRating
+            tvGenre.text = data.genre
+            tvReviews.text =
+                context.getString(R.string.title_movie_reviews_count, data.reviewsCount)
+            rbRating.rating = data.rating
+            tvTitle.text = data.title
+            tvDuration.text = context.getString(R.string.title_movie_duration, data.duration)
         }
     }
 
-    abstract class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
-        val RecyclerView.ViewHolder.context: Context
-            get() = this.itemView.context
-    }
+    abstract class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 }
+
+val RecyclerView.ViewHolder.context: Context
+    get() = this.itemView.context
