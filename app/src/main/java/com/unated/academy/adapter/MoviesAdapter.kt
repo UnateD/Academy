@@ -1,5 +1,6 @@
 package com.unated.academy.adapter
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,7 +9,6 @@ import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.unated.academy.R
-import com.unated.academy.context
 import com.unated.academy.model.Movie
 
 class MoviesAdapter(var listener: (Int) -> Unit) :
@@ -16,21 +16,23 @@ class MoviesAdapter(var listener: (Int) -> Unit) :
 
     private var movies = arrayListOf<Movie>()
 
-    fun setMovies(_movies: ArrayList<Movie>) {
-        movies.clear()
-        movies.addAll(_movies)
+    fun setMovies(movies: ArrayList<Movie>) {
+        this.movies = movies
         notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         return MovieViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.item_movie_list, parent, false)
-        ).listener { listener.invoke(it) }
+        ).listener(listener)
     }
 
     override fun getItemCount(): Int = movies.size
-    override fun onBindViewHolder(holder: BaseViewHolder, position: Int) =
-        holder.bind(movies[position])
+    override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
+        if(holder is MovieViewHolder) {
+            holder.bind(movies[position])
+        }
+    }
 
     class MovieViewHolder(itemView: View) : BaseViewHolder(itemView) {
 
@@ -43,7 +45,7 @@ class MoviesAdapter(var listener: (Int) -> Unit) :
         private val tvTitle: TextView = itemView.findViewById(R.id.tv_title)
         private val tvDuration: TextView = itemView.findViewById(R.id.tv_duration)
 
-        override fun bind(data: Any) {
+        fun bind(data: Any) {
             if (data is Movie) {
                 ivCover.setImageResource(data.smallCoverImg)
                 ivFavorite.setImageResource(
@@ -64,6 +66,8 @@ class MoviesAdapter(var listener: (Int) -> Unit) :
     }
 
     abstract class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        abstract fun bind(data: Any)
+
+        val RecyclerView.ViewHolder.context: Context
+            get() = this.itemView.context
     }
 }

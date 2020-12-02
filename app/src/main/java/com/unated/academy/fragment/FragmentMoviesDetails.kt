@@ -13,19 +13,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.unated.academy.R
 import com.unated.academy.adapter.ActorsAdapter
 import com.unated.academy.domain.DataSource
+import com.unated.academy.interfaces.NavigationListener
 
 class FragmentMoviesDetails : Fragment() {
 
-    private lateinit var adapter: ActorsAdapter
-    private var dataSource: DataSource = DataSource()
+    private var navigationListener: NavigationListener? = null
 
-    private var rvActors: RecyclerView? = null
-    private var tvAge: TextView? = null
-    private var tvTitle: TextView? = null
-    private var tvGenre: TextView? = null
-    private var tvReviews: TextView? = null
-    private var rbRating: RatingBar? = null
-    private var tvStoryline: TextView? = null
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if(context is NavigationListener){
+            navigationListener = context
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,25 +37,23 @@ class FragmentMoviesDetails : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.findViewById<LinearLayout>(R.id.llBack)
-            .setOnClickListener { activity?.onBackPressed() }
+            .setOnClickListener { navigationListener?.goToMain() }
 
-        initViews()
         fillViews(arguments?.get(EXTRA_MOVIE_ID) as Int)
     }
 
-    private fun initViews() {
-        tvAge = view?.findViewById(R.id.tv_age)
-        tvTitle = view?.findViewById(R.id.tv_title)
-        tvGenre = view?.findViewById(R.id.tv_genre)
-        tvReviews = view?.findViewById(R.id.tv_reviews)
-        rbRating = view?.findViewById(R.id.rb_rating)
-        tvStoryline = view?.findViewById(R.id.tv_storyline)
-        rvActors = view?.findViewById(R.id.rv_actors)
-    }
-
     private fun fillViews(movieId: Int) {
-        dataSource.getMovieById(movieId)?.let { movie ->
-            adapter = ActorsAdapter(movie.actors)
+
+        val tvAge: TextView? = view?.findViewById(R.id.tv_age)
+        val tvTitle: TextView? = view?.findViewById(R.id.tv_title)
+        val tvGenre: TextView? = view?.findViewById(R.id.tv_genre)
+        val tvReviews: TextView? = view?.findViewById(R.id.tv_reviews)
+        val rbRating: RatingBar? = view?.findViewById(R.id.rb_rating)
+        val tvStoryline: TextView? = view?.findViewById(R.id.tv_storyline)
+        val rvActors: RecyclerView? = view?.findViewById(R.id.rv_actors)
+
+        DataSource().getMovieById(movieId)?.let { movie ->
+            var adapter = ActorsAdapter(movie.actors)
             rvActors?.adapter = adapter
             tvAge?.text = movie.ageRating
             tvTitle?.text = movie.title
@@ -73,9 +70,9 @@ class FragmentMoviesDetails : Fragment() {
         private const val EXTRA_MOVIE_ID = "extra_movie_id"
 
         fun newInstance(id: Int): FragmentMoviesDetails {
-            var bundle = Bundle()
+            val bundle = Bundle()
             bundle.putInt(EXTRA_MOVIE_ID, id)
-            var fragment = FragmentMoviesDetails()
+            val fragment = FragmentMoviesDetails()
             fragment.arguments = bundle
             return fragment
         }

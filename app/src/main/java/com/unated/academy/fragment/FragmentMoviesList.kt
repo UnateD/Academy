@@ -16,8 +16,6 @@ class FragmentMoviesList : Fragment() {
 
     private var navigationListener: NavigationListener? = null
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: MoviesAdapter
-    private val dataSource: DataSource = DataSource()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -38,14 +36,14 @@ class FragmentMoviesList : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         recyclerView = view.findViewById(R.id.rv_movies)
 
-        adapter = MoviesAdapter(listener)
+        val adapter = MoviesAdapter(listener)
+        adapter.setMovies(DataSource().getMovies())
         recyclerView.adapter = adapter
-        adapter.setMovies(dataSource.getMovies())
     }
 
     private var listener = object : (Int) -> Unit {
         override fun invoke(pos: Int) {
-            navigationListener?.goToDetails(dataSource.getMovies()[pos].id)
+            navigationListener?.goToDetails(DataSource().getMovies()[pos].id)
         }
     }
 }
