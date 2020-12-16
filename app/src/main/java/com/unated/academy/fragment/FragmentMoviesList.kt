@@ -7,15 +7,21 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.unated.academy.DataProvider
 import com.unated.academy.interfaces.NavigationListener
 import com.unated.academy.R
 import com.unated.academy.adapter.MoviesAdapter
+import com.unated.academy.data.loadMovies
 import com.unated.academy.domain.DataSource
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-class FragmentMoviesList : Fragment() {
+class FragmentMoviesList : BaseFragment() {
 
     private var navigationListener: NavigationListener? = null
     private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: MoviesAdapter
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -41,14 +47,25 @@ class FragmentMoviesList : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         recyclerView = view.findViewById(R.id.rv_movies)
 
-        val adapter = MoviesAdapter(listener)
-        adapter.setMovies(DataSource().getMovies())
+        adapter = MoviesAdapter(listener)
         recyclerView.adapter = adapter
+        getMovies()
     }
 
-    private var listener = object : (Int) -> Unit {
-        override fun invoke(pos: Int) {
-            navigationListener?.goToDetails(DataSource().getMovies()[pos].id)
+    private fun getMovies() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val movies = dataProvider?.dataSource()?.getMovies()!!
+            CoroutineScope(Dispatchers.Main).launch { adapter.setMovies(movies) }
         }
     }
+
+    private var listener = object: MovieClickListener {
+        override fun onMovieClicked(id: Int) {
+            navigationListener?.goToDetails(id)
+        }
+    }
+}
+
+interface MovieClickListener {
+    fun onMovieClicked(id: Int)
 }

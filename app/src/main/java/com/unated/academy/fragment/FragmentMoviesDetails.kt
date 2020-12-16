@@ -11,12 +11,16 @@ import android.widget.RatingBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.unated.academy.R
 import com.unated.academy.adapter.ActorsAdapter
 import com.unated.academy.domain.DataSource
 import com.unated.academy.interfaces.NavigationListener
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-class FragmentMoviesDetails : Fragment() {
+class FragmentMoviesDetails : BaseFragment() {
 
     private var navigationListener: NavigationListener? = null
 
@@ -59,17 +63,21 @@ class FragmentMoviesDetails : Fragment() {
         val rvActors: RecyclerView? = view?.findViewById(R.id.rv_actors)
         val ivHeader: ImageView? = view?.findViewById(R.id.iv_header)
 
-        DataSource().getMovieById(movieId)?.let { movie ->
-            var adapter = ActorsAdapter(movie.actors)
-            rvActors?.adapter = adapter
-            tvAge?.text = movie.ageRating
-            tvTitle?.text = movie.title
-            tvGenre?.text = movie.genre
-            tvReviews?.text =
-                context?.getString(R.string.title_movie_reviews_count, movie.reviewsCount)
-            rbRating?.rating = movie.rating
-            tvStoryline?.text = movie.storyline
-            ivHeader?.setImageResource(movie.fullCoverImg)
+        CoroutineScope(Dispatchers.IO).launch {
+            dataProvider?.dataSource()?.getMovieById(movieId)?.let { movie ->
+                CoroutineScope(Dispatchers.Main).launch {
+                    val adapter = ActorsAdapter(movie.actors)
+                    rvActors?.adapter = adapter
+                    tvAge?.text = movie.minimumAge.toString()
+                    tvTitle?.text = movie.title
+                    tvGenre?.text = movie.genres.joinToString(separator = ", ") { it.name }
+                    tvReviews?.text =
+                        context?.getString(R.string.title_movie_reviews_count, movie.numberOfRatings)
+                    rbRating?.rating = movie.ratings / 2
+                    tvStoryline?.text = movie.overview
+                    Glide.with(ivHeader!!).load(movie.poster).into(ivHeader)
+                }
+            }
         }
     }
 
