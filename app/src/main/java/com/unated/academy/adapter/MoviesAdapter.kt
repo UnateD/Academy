@@ -16,7 +16,8 @@ import com.unated.academy.R
 import com.unated.academy.data.Movie
 import com.unated.academy.fragment.MovieClickListener
 
-class MoviesAdapter(var listener: MovieClickListener) : RecyclerView.Adapter<MoviesAdapter.BaseViewHolder>() {
+class MoviesAdapter(var listener: MovieClickListener) :
+    RecyclerView.Adapter<MoviesAdapter.BaseViewHolder>() {
 
     private var movies = arrayListOf<Movie>()
 
@@ -33,7 +34,7 @@ class MoviesAdapter(var listener: MovieClickListener) : RecyclerView.Adapter<Mov
 
     override fun getItemCount(): Int = movies.size
     override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
-        if(holder is MovieViewHolder) {
+        if (holder is MovieViewHolder) {
             holder.bind(movies[position])
             holder.itemView.setOnClickListener { listener.onMovieClicked(movies[position].id) }
         }
@@ -51,7 +52,12 @@ class MoviesAdapter(var listener: MovieClickListener) : RecyclerView.Adapter<Mov
         private val tvDuration: TextView = itemView.findViewById(R.id.tv_duration)
 
         fun bind(data: Movie) {
-            Glide.with(ivCover).load(data.poster).apply(RequestOptions().transform(CenterCrop(), RoundedCorners(16))).into(ivCover)
+            Glide.with(ivCover).load(data.poster).apply(
+                RequestOptions().transform(
+                    CenterCrop(),
+                    RoundedCorners(16)
+                )
+            ).into(ivCover)
             ivFavorite.setImageResource(
                 when (data.isFavorite) {
                     true -> R.drawable.ic_fav_selected

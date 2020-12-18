@@ -11,11 +11,13 @@ import com.unated.academy.DataProvider
 import com.unated.academy.interfaces.NavigationListener
 import com.unated.academy.R
 import com.unated.academy.adapter.MoviesAdapter
+import com.unated.academy.data.Movie
 import com.unated.academy.data.loadMovies
 import com.unated.academy.domain.DataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class FragmentMoviesList : BaseFragment() {
 
@@ -49,17 +51,19 @@ class FragmentMoviesList : BaseFragment() {
 
         adapter = MoviesAdapter(listener)
         recyclerView.adapter = adapter
-        getMovies()
+
+        CoroutineScope(Dispatchers.IO).launch { getMovies() }
     }
 
-    private fun getMovies() {
-        CoroutineScope(Dispatchers.IO).launch {
-            val movies = dataProvider?.dataSource()?.getMovies()!!
-            CoroutineScope(Dispatchers.Main).launch { adapter.setMovies(movies) }
-        }
+    private suspend fun getMovies() = withContext(Dispatchers.IO) {
+        fillViews(dataProvider?.dataSource()?.getMovies()!!)
     }
 
-    private var listener = object: MovieClickListener {
+    private suspend fun fillViews(movies: ArrayList<Movie>) = withContext(Dispatchers.Main) {
+        adapter.setMovies(movies)
+    }
+
+    private var listener = object : MovieClickListener {
         override fun onMovieClicked(id: Int) {
             navigationListener?.goToDetails(id)
         }
