@@ -56,7 +56,7 @@ class FragmentMoviesList : BaseFragment() {
     }
 
     private suspend fun getMovies() = withContext(Dispatchers.IO) {
-        fillViews(dataProvider?.dataSource()?.getMovies()!!)
+        dataProvider?.dataSource()?.getMovies()?.let { fillViews(it) }
     }
 
     private suspend fun fillViews(movies: ArrayList<Movie>) = withContext(Dispatchers.Main) {

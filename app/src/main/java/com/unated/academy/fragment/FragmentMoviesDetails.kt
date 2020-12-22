@@ -70,11 +70,11 @@ class FragmentMoviesDetails : BaseFragment() {
         view.findViewById<LinearLayout>(R.id.llBack)
             .setOnClickListener { navigationListener?.goToMain() }
 
-        CoroutineScope(Dispatchers.IO).launch { getMovie(arguments?.get(EXTRA_MOVIE_ID) as Int) }
+        CoroutineScope(Dispatchers.IO).launch { getMovie(arguments?.getInt(EXTRA_MOVIE_ID, 0)) }
     }
 
-    private suspend fun getMovie(movieId: Int) = withContext(Dispatchers.IO) {
-        dataProvider?.dataSource()?.getMovieById(movieId)?.let { fillViews(it) }
+    private suspend fun getMovie(movieId: Int?) = withContext(Dispatchers.IO) {
+        movieId?.let { dataProvider?.dataSource()?.getMovieById(movieId)?.let { fillViews(it) } }
     }
 
     private suspend fun fillViews(movie: Movie) = withContext(Dispatchers.Main) {
