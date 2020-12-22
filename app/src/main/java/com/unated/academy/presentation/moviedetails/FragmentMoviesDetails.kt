@@ -1,4 +1,4 @@
-package com.unated.academy.fragment
+package com.unated.academy.presentation.moviedetails
 
 import android.content.Context
 import android.os.Bundle
@@ -10,19 +10,14 @@ import android.widget.LinearLayout
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.unated.academy.R
-import com.unated.academy.adapter.ActorsAdapter
 import com.unated.academy.data.Movie
-import com.unated.academy.domain.DataSource
 import com.unated.academy.interfaces.NavigationListener
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
-class FragmentMoviesDetails : BaseFragment() {
+class FragmentMoviesDetails : Fragment() {
 
     private var tvAge: TextView? = null
     private var tvTitle: TextView? = null
@@ -34,6 +29,8 @@ class FragmentMoviesDetails : BaseFragment() {
     private var ivHeader: ImageView? = null
 
     private var navigationListener: NavigationListener? = null
+
+    private lateinit var viewModel: MovieDetailsViewModel
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -67,17 +64,18 @@ class FragmentMoviesDetails : BaseFragment() {
         rvActors = view.findViewById(R.id.rv_actors)
         ivHeader = view.findViewById(R.id.iv_header)
 
+        viewModel = ViewModelProvider(this)[MovieDetailsViewModel::class.java]
+
         view.findViewById<LinearLayout>(R.id.llBack)
             .setOnClickListener { navigationListener?.goToMain() }
 
-        CoroutineScope(Dispatchers.IO).launch { getMovie(arguments?.getInt(EXTRA_MOVIE_ID, 0)) }
+        viewModel.movie.observe(viewLifecycleOwner, { fillViews(it) })
+
+        arguments?.getInt(EXTRA_MOVIE_ID, 0)?.let { viewModel.getMovie(it) }
     }
 
-    private suspend fun getMovie(movieId: Int?) = withContext(Dispatchers.IO) {
-        movieId?.let { dataProvider?.dataSource()?.getMovieById(movieId)?.let { fillViews(it) } }
-    }
 
-    private suspend fun fillViews(movie: Movie) = withContext(Dispatchers.Main) {
+    private fun fillViews(movie: Movie) {
         val adapter = ActorsAdapter(movie.actors)
         rvActors?.adapter = adapter
         tvAge?.text = movie.minimumAge.toString()

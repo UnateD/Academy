@@ -4,8 +4,8 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.unated.academy.R
-import com.unated.academy.fragment.FragmentMoviesDetails
-import com.unated.academy.fragment.FragmentMoviesList
+import com.unated.academy.presentation.moviedetails.FragmentMoviesDetails
+import com.unated.academy.presentation.movielist.FragmentMoviesList
 import com.unated.academy.interfaces.NavigationListener
 
 class MainActivity : AppCompatActivity(),

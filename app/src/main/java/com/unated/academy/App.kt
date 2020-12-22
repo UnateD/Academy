@@ -1,21 +1,17 @@
 package com.unated.academy
 
 import android.app.Application
-import com.unated.academy.domain.DataSource
+import android.content.Context
 
-interface DataProvider {
-    fun dataSource() : DataSource
-}
+class App : Application() {
 
-class App : Application(), DataProvider {
-
-    private lateinit var dataSource: DataSource
+    companion object {
+        lateinit var context: Context
+    }
 
     override fun onCreate() {
         super.onCreate()
 
-        dataSource = DataSource(this)
+        context = applicationContext
     }
-
-    override fun dataSource() = dataSource
 }

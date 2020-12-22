@@ -1,4 +1,4 @@
-package com.unated.academy.adapter
+package com.unated.academy.presentation.moviedetails
 
 import android.view.LayoutInflater
 import android.view.View
