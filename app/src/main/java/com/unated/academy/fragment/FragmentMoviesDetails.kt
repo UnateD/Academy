@@ -11,18 +11,33 @@ import android.widget.RatingBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.unated.academy.R
 import com.unated.academy.adapter.ActorsAdapter
+import com.unated.academy.data.Movie
 import com.unated.academy.domain.DataSource
 import com.unated.academy.interfaces.NavigationListener
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class FragmentMoviesDetails : Fragment() {
+class FragmentMoviesDetails : BaseFragment() {
+
+    private var tvAge: TextView? = null
+    private var tvTitle: TextView? = null
+    private var tvGenre: TextView? = null
+    private var tvReviews: TextView? = null
+    private var rbRating: RatingBar? = null
+    private var tvStoryline: TextView? = null
+    private var rvActors: RecyclerView? = null
+    private var ivHeader: ImageView? = null
 
     private var navigationListener: NavigationListener? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if(context is NavigationListener){
+        if (context is NavigationListener) {
             navigationListener = context
         }
     }
@@ -42,35 +57,37 @@ class FragmentMoviesDetails : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        tvAge = view.findViewById(R.id.tv_age)
+        tvTitle = view.findViewById(R.id.tv_title)
+        tvGenre = view.findViewById(R.id.tv_genre)
+        tvReviews = view.findViewById(R.id.tv_reviews)
+        rbRating = view.findViewById(R.id.rb_rating)
+        tvStoryline = view.findViewById(R.id.tv_storyline)
+        rvActors = view.findViewById(R.id.rv_actors)
+        ivHeader = view.findViewById(R.id.iv_header)
+
         view.findViewById<LinearLayout>(R.id.llBack)
             .setOnClickListener { navigationListener?.goToMain() }
 
-        fillViews(arguments?.get(EXTRA_MOVIE_ID) as Int)
+        CoroutineScope(Dispatchers.IO).launch { getMovie(arguments?.getInt(EXTRA_MOVIE_ID, 0)) }
     }
 
-    private fun fillViews(movieId: Int) {
+    private suspend fun getMovie(movieId: Int?) = withContext(Dispatchers.IO) {
+        movieId?.let { dataProvider?.dataSource()?.getMovieById(movieId)?.let { fillViews(it) } }
+    }
 
-        val tvAge: TextView? = view?.findViewById(R.id.tv_age)
-        val tvTitle: TextView? = view?.findViewById(R.id.tv_title)
-        val tvGenre: TextView? = view?.findViewById(R.id.tv_genre)
-        val tvReviews: TextView? = view?.findViewById(R.id.tv_reviews)
-        val rbRating: RatingBar? = view?.findViewById(R.id.rb_rating)
-        val tvStoryline: TextView? = view?.findViewById(R.id.tv_storyline)
-        val rvActors: RecyclerView? = view?.findViewById(R.id.rv_actors)
-        val ivHeader: ImageView? = view?.findViewById(R.id.iv_header)
-
-        DataSource().getMovieById(movieId)?.let { movie ->
-            var adapter = ActorsAdapter(movie.actors)
-            rvActors?.adapter = adapter
-            tvAge?.text = movie.ageRating
-            tvTitle?.text = movie.title
-            tvGenre?.text = movie.genre
-            tvReviews?.text =
-                context?.getString(R.string.title_movie_reviews_count, movie.reviewsCount)
-            rbRating?.rating = movie.rating
-            tvStoryline?.text = movie.storyline
-            ivHeader?.setImageResource(movie.fullCoverImg)
-        }
+    private suspend fun fillViews(movie: Movie) = withContext(Dispatchers.Main) {
+        val adapter = ActorsAdapter(movie.actors)
+        rvActors?.adapter = adapter
+        tvAge?.text = movie.minimumAge.toString()
+        tvTitle?.text = movie.title
+        tvGenre?.text = movie.genres.joinToString(separator = ", ") { it.name }
+        tvReviews?.text =
+            context?.getString(R.string.title_movie_reviews_count, movie.numberOfRatings)
+        rbRating?.rating = movie.ratings / 2
+        tvStoryline?.text = movie.overview
+        Glide.with(ivHeader!!).load(movie.poster).into(ivHeader!!)
     }
 
     companion object {
