@@ -69,15 +69,15 @@ internal fun parseActors(data: String): List<Actor> {
 }
 
 @Suppress("unused")
-internal suspend fun loadMovies(): ArrayList<Movie> = withContext(Dispatchers.IO) {
-    val genresMap = loadGenres(App.context)
-    val actorsMap = loadActors(App.context)
+internal suspend fun loadMovies(context: Context): ArrayList<Movie> = withContext(Dispatchers.IO) {
+    val genresMap = loadGenres(context)
+    val actorsMap = loadActors(context)
 
-    val data = readAssetFileToString(App.context, "data.json")
+    val data = readAssetFileToString(context, "data.json")
     parseMovies(data, genresMap, actorsMap)
 }
 
-internal suspend fun getMovie(id: Int): Movie? = loadMovies().find { it.id == id }
+internal suspend fun getMovie(context: Context, id: Int): Movie? = loadMovies(context).find { it.id == id }
 
 internal fun parseMovies(
     data: String,

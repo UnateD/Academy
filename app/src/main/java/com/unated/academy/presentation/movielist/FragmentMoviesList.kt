@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.unated.academy.interfaces.NavigationListener
 import com.unated.academy.R
+import com.unated.academy.appComponent
 
 class FragmentMoviesList : Fragment() {
 
@@ -42,7 +43,7 @@ class FragmentMoviesList : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = ViewModelProvider(this)[MoviesViewModel::class.java]
+        viewModel = ViewModelProvider(this, appComponent().getFactory())[MoviesViewModel::class.java]
 
         recyclerView = view.findViewById(R.id.rv_movies)
         adapter = MoviesAdapter(listener)

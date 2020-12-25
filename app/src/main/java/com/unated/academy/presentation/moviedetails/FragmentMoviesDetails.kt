@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.unated.academy.R
+import com.unated.academy.appComponent
 import com.unated.academy.data.Movie
 import com.unated.academy.interfaces.NavigationListener
 
@@ -64,7 +65,7 @@ class FragmentMoviesDetails : Fragment() {
         rvActors = view.findViewById(R.id.rv_actors)
         ivHeader = view.findViewById(R.id.iv_header)
 
-        viewModel = ViewModelProvider(this)[MovieDetailsViewModel::class.java]
+        viewModel = ViewModelProvider(this, appComponent().getFactory())[MovieDetailsViewModel::class.java]
 
         view.findViewById<LinearLayout>(R.id.llBack)
             .setOnClickListener { navigationListener?.goToMain() }
