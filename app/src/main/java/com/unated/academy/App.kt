@@ -11,7 +11,7 @@ class App : Application(), AppComponent {
     override fun onCreate() {
         super.onCreate()
 
-        viewModelFactory = ViewModelFactory(MovieDataSource(this))
+        viewModelFactory = ViewModelFactory()
     }
 
     override fun getFactory() = viewModelFactory

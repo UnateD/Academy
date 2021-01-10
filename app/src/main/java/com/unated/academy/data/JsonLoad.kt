@@ -1,3 +1,4 @@
+/*
 package com.unated.academy.data
 
 import android.content.Context
@@ -110,4 +111,4 @@ internal fun parseMovies(
             isFavorite = false
         )
     }.toCollection(arrayListOf())
-}
+}*/
