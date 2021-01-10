@@ -1,4 +1,4 @@
-package com.unated.academy.adapter
+package com.unated.academy.presentation.movielist
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -14,7 +14,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.unated.academy.R
 import com.unated.academy.data.Movie
-import com.unated.academy.fragment.MovieClickListener
+import com.unated.academy.presentation.movielist.MovieClickListener
 
 class MoviesAdapter(var listener: MovieClickListener) :
     RecyclerView.Adapter<MoviesAdapter.BaseViewHolder>() {

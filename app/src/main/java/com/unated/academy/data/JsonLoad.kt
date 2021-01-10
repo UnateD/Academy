@@ -1,6 +1,7 @@
 package com.unated.academy.data
 
 import android.content.Context
+import com.unated.academy.App
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerialName

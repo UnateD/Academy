@@ -1,4 +1,4 @@
-package com.unated.academy.adapter
+package com.unated.academy.presentation.movielist
 
 import androidx.recyclerview.widget.RecyclerView
 

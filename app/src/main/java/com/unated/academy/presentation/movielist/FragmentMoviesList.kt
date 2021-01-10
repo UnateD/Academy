@@ -1,4 +1,4 @@
-package com.unated.academy.fragment
+package com.unated.academy.presentation.movielist
 
 import android.content.Context
 import android.os.Bundle
@@ -6,24 +6,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
-import com.unated.academy.DataProvider
 import com.unated.academy.interfaces.NavigationListener
 import com.unated.academy.R
-import com.unated.academy.adapter.MoviesAdapter
-import com.unated.academy.data.Movie
-import com.unated.academy.data.loadMovies
-import com.unated.academy.domain.DataSource
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.unated.academy.appComponent
 
-class FragmentMoviesList : BaseFragment() {
+class FragmentMoviesList : Fragment() {
 
     private var navigationListener: NavigationListener? = null
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: MoviesAdapter
+
+    private lateinit var viewModel: MoviesViewModel
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -47,20 +42,14 @@ class FragmentMoviesList : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        recyclerView = view.findViewById(R.id.rv_movies)
 
+        viewModel = ViewModelProvider(this, appComponent().getFactory())[MoviesViewModel::class.java]
+
+        recyclerView = view.findViewById(R.id.rv_movies)
         adapter = MoviesAdapter(listener)
         recyclerView.adapter = adapter
 
-        CoroutineScope(Dispatchers.IO).launch { getMovies() }
-    }
-
-    private suspend fun getMovies() = withContext(Dispatchers.IO) {
-        dataProvider?.dataSource()?.getMovies()?.let { fillViews(it) }
-    }
-
-    private suspend fun fillViews(movies: ArrayList<Movie>) = withContext(Dispatchers.Main) {
-        adapter.setMovies(movies)
+        viewModel.movies.observe(viewLifecycleOwner, { adapter.setMovies(it) })
     }
 
     private var listener = object : MovieClickListener {

@@ -1,21 +1,21 @@
 package com.unated.academy
 
 import android.app.Application
-import com.unated.academy.domain.DataSource
+import android.content.Context
+import androidx.fragment.app.Fragment
 
-interface DataProvider {
-    fun dataSource() : DataSource
-}
+class App : Application(), AppComponent {
 
-class App : Application(), DataProvider {
-
-    private lateinit var dataSource: DataSource
+    private lateinit var viewModelFactory: ViewModelFactory
 
     override fun onCreate() {
         super.onCreate()
 
-        dataSource = DataSource(this)
+        viewModelFactory = ViewModelFactory(MovieDataSource(this))
     }
 
-    override fun dataSource() = dataSource
+    override fun getFactory() = viewModelFactory
 }
+
+fun Context.appComponent() = (applicationContext as App)
+fun Fragment.appComponent() = requireContext().appComponent()
