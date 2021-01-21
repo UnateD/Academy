@@ -1,8 +1,14 @@
 package com.unated.academy.data
 
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
+import java.lang.reflect.Constructor
 
+@Entity(tableName = "movies")
 data class Movie(
+    @PrimaryKey
     val id: Int,
     val title: String,
     val overview: String,
@@ -16,7 +22,7 @@ data class Movie(
     val numberOfRatings: Int,
     val adult: Boolean,
     @SerializedName("genre_ids")
-    val genres: List<Int>,
+    val genres: ArrayList<Int>,
     val isFavorite: Boolean,
     var displayGenres: ArrayList<Genre>,
     var runtime: Int

@@ -1,12 +1,18 @@
 package com.unated.academy
 
-import com.unated.academy.data.MovieDetails
-import com.unated.academy.data.MoviesResponse
+import android.content.Context
+import com.unated.academy.data.*
 
-class MoviesRepository {
+class MoviesRepository(context: Context) {
 
-    suspend fun getMovies(page: Int): MoviesResponse {
-        val genresResponse = getGenres().genres
+    private val appDb = AppDatabase.create(context)
+
+    suspend fun getMoviesLocal(): List<Movie> {
+        return appDb.dao.getMovies()
+    }
+
+    suspend fun getRemoteMovies(page: Int): List<Movie> {
+        val genresResponse = getGenres()
         val response = Retrofit.appApi.getMovies(page)
         response.results.forEach { movie ->
             movie.displayGenres = arrayListOf()
@@ -16,22 +22,41 @@ class MoviesRepository {
             val movieResponse = getDetails(movie.id)
             movie.runtime = movieResponse.runtime
         }
-        return response
+        if(response.page == 1) {
+            appDb.dao.setMovies(response.results)
+        }
+        return response.results
     }
 
     suspend fun getMovieById(movieId: Int): MovieDetails {
-        val castResponse = getActors(movieId).cast
-        val movie = Retrofit.appApi.getMovieDetails(movieId)
-        movie.actors = arrayListOf()
-        movie.actors.addAll(castResponse)
-        return movie
+        var details = appDb.dao.getMovieDetails(movieId)
+        return if(details == null) {
+            val castResponse = getActors(movieId).cast
+            details = Retrofit.appApi.getMovieDetails(movieId)
+            details.actors = arrayListOf()
+            details.actors.addAll(castResponse)
+
+            appDb.dao.setMovieDetails(details)
+            details
+        } else {
+            details
+        }
     }
 
-    suspend fun getDetails(movieId: Int) = Retrofit.appApi.getMovieDetails(movieId)
+    private suspend fun getDetails(movieId: Int) = Retrofit.appApi.getMovieDetails(movieId)
 
-    suspend fun getActors(movieId: Int) = Retrofit.appApi.getActors(movieId)
+    private suspend fun getActors(movieId: Int) = Retrofit.appApi.getActors(movieId)
 
-    suspend fun getGenres() = Retrofit.appApi.getGenres()
+    private suspend fun getGenres(): List<Genre> {
+        var genres: List<Genre> = appDb.dao.getGenres()
+        return if (genres.isEmpty()) {
+            genres = Retrofit.appApi.getGenres().genres
+            appDb.dao.setGenres(genres)
+            genres
+        } else {
+            genres
+        }
+    }
 
     suspend fun getConfiguration() = Retrofit.appApi.getConfiguration()
 }

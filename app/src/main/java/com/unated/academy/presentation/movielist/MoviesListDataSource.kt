@@ -1,7 +1,5 @@
 package com.unated.academy.presentation.movielist
 
-import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PageKeyedDataSource
 import com.unated.academy.MoviesRepository
@@ -27,17 +25,23 @@ class MoviesListDataSource(
     ) {
         loadingState.postValue(true)
         CoroutineScope(Dispatchers.IO).launch(coroutineException) {
-            val response = moviesRepository.getMovies(1)
-            callback.onResult(response.results, null, 2)
-            loadingState.postValue(false)
+            var response: List<Movie> = moviesRepository.getMoviesLocal()
+            if(response.isNotEmpty()) {
+                callback.onResult(response, null, 2)
+                loadingState.postValue(false)
+            } else {
+                response = moviesRepository.getRemoteMovies(1)
+                callback.onResult(response, null, 2)
+                loadingState.postValue(false)
+            }
         }
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, Movie>) {
         loadingState.postValue(true)
         CoroutineScope(Dispatchers.IO).launch(coroutineException) {
-            val response = moviesRepository.getMovies(params.key)
-            callback.onResult(response.results, params.key + 1)
+            val response = moviesRepository.getRemoteMovies(params.key)
+            callback.onResult(response, params.key + 1)
             loadingState.postValue(false)
         }
     }

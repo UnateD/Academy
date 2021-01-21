@@ -1,8 +1,13 @@
 package com.unated.academy.data
 
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
+@Entity(tableName = "details")
 data class MovieDetails(
+    @PrimaryKey
     val id: Int,
     val title: String,
     val overview: String,
@@ -15,7 +20,7 @@ data class MovieDetails(
     @SerializedName("vote_count")
     val numberOfRatings: Int,
     val adult: Boolean,
-    val genres: List<Genre>,
+    val genres: ArrayList<Genre>,
     var actors: ArrayList<Actor>,
     val isFavorite: Boolean,
     var runtime: Int
