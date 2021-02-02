@@ -10,9 +10,7 @@ import com.unated.academy.data.Movie
 import com.unated.academy.data.MovieDetails
 import kotlinx.coroutines.launch
 
-class MovieDetailsViewModel() : ViewModel() {
-
-    private val repository = MoviesRepository()
+class MovieDetailsViewModel(private val repository: MoviesRepository) : ViewModel() {
 
     private var _movie = MutableLiveData<MovieDetails>()
     val movie: LiveData<MovieDetails> get() = _movie

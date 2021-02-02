@@ -8,9 +8,8 @@ import com.unated.academy.MoviesRepository
 import com.unated.academy.data.Configuration
 import kotlinx.coroutines.launch
 
-class MainViewModel : ViewModel() {
+class MainViewModel(private val repository: MoviesRepository) : ViewModel() {
 
-    private var repository = MoviesRepository()
     private var _configuration = MutableLiveData<Configuration>()
     var configuration: LiveData<Configuration> = _configuration
 
