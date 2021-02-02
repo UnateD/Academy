@@ -3,6 +3,7 @@ package com.unated.academy.data
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
 @Dao
@@ -17,7 +18,7 @@ interface MoviesDao {
     @Query("SELECT * FROM genres")
     suspend fun getGenres() : List<Genre>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun setMovies(movies: List<Movie>)
 
     @Insert
