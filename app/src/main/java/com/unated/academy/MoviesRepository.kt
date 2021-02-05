@@ -1,7 +1,11 @@
 package com.unated.academy
 
 import android.content.Context
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequest
 import com.unated.academy.data.*
+import java.util.concurrent.TimeUnit
 
 class MoviesRepository(context: Context) {
 

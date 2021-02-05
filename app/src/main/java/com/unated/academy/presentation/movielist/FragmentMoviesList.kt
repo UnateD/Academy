@@ -10,10 +10,14 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import androidx.work.*
+import com.unated.academy.MoviesRepository
+import com.unated.academy.MoviesWorker
 import com.unated.academy.interfaces.NavigationListener
 import com.unated.academy.R
 import com.unated.academy.appComponent
 import com.unated.academy.data.Configuration
+import java.util.concurrent.TimeUnit
 
 class FragmentMoviesList : Fragment() {
 
@@ -23,6 +27,10 @@ class FragmentMoviesList : Fragment() {
     private lateinit var progressBar: ProgressBar
 
     private lateinit var viewModel: MoviesViewModel
+
+    private val constraints = Constraints.Builder().setRequiresCharging(true).setRequiredNetworkType(
+        NetworkType.UNMETERED).build()
+    private val moviesWorker = PeriodicWorkRequest.Builder(MoviesWorker::class.java, 16, TimeUnit.MINUTES).setConstraints(constraints).build()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -49,6 +57,8 @@ class FragmentMoviesList : Fragment() {
 
         viewModel =
             ViewModelProvider(this, appComponent().getFactory())[MoviesViewModel::class.java]
+
+        WorkManager.getInstance(requireContext()).enqueueUniquePeriodicWork("moviesWork", ExistingPeriodicWorkPolicy.REPLACE, moviesWorker)
 
         progressBar = view.findViewById(R.id.progress_bar)
         recyclerView = view.findViewById(R.id.rv_movies)
