@@ -10,6 +10,11 @@ import java.util.concurrent.TimeUnit
 class MoviesRepository(context: Context) {
 
     private val appDb = AppDatabase.create(context)
+    private val notifications: INotifications = Notifications(context)
+
+    init {
+        notifications.initialize()
+    }
 
     suspend fun getMoviesLocal(): List<Movie> {
         return appDb.dao.getMovies()
@@ -28,7 +33,9 @@ class MoviesRepository(context: Context) {
         }
         if(response.page == 1) {
             appDb.dao.setMovies(response.results)
+            notifications.showNotification(appDb.dao.getMax())
         }
+
         return response.results
     }
 

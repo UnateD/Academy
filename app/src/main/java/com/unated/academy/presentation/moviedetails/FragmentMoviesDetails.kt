@@ -1,7 +1,9 @@
 package com.unated.academy.presentation.moviedetails
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.provider.CalendarContract
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -74,12 +76,27 @@ class FragmentMoviesDetails : Fragment() {
         view.findViewById<LinearLayout>(R.id.llBack)
             .setOnClickListener { navigationListener?.goToMain() }
 
+        view.findViewById<TextView>(R.id.tv_schedule).setOnClickListener {
+            schedule()
+        }
+
         viewModel.movie.observe(viewLifecycleOwner, { fillViews(it) })
 
         configuration = arguments?.getSerializable(EXTRA_CONFIGURATION) as Configuration
         arguments?.getInt(EXTRA_MOVIE_ID, 0)?.let { viewModel.getMovie(it) }
     }
 
+    private fun schedule() {
+        val intent = Intent(Intent.ACTION_INSERT).apply {
+            data = CalendarContract.Events.CONTENT_URI
+            putExtra(CalendarContract.Events.TITLE, viewModel.movie.value?.title)
+            putExtra(CalendarContract.Events.DESCRIPTION, viewModel.movie.value?.overview)
+        }
+
+        if(context?.packageManager?.let { intent.resolveActivity(it) } != null) {
+            startActivity(intent)
+        }
+    }
 
     private fun fillViews(movie: MovieDetails) {
         val adapter = ActorsAdapter(configuration, movie.actors)
@@ -91,7 +108,9 @@ class FragmentMoviesDetails : Fragment() {
             context?.getString(R.string.title_movie_reviews_count, movie.numberOfRatings)
         rbRating?.rating = movie.ratings / 2
         tvStoryline?.text = movie.overview
-        Glide.with(ivHeader!!).load("${configuration.images.base_url}/${configuration.images.poster_sizes.last()}/${movie.poster}").into(ivHeader!!)
+        Glide.with(ivHeader!!)
+            .load("${configuration.images.base_url}/${configuration.images.poster_sizes.last()}/${movie.poster}")
+            .into(ivHeader!!)
     }
 
     companion object {
