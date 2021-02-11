@@ -40,7 +40,7 @@ class Notifications(private val context: Context) : INotifications {
     }
 
     override fun showNotification(movie: Movie) {
-        val contentUri = "https://android.example.com/chat/${movie.id}".toUri()
+        val contentUri = "https://academy.unated.com/movie/${movie.id}".toUri()
 
         val builder = NotificationCompat.Builder(context, CHANNEL_NEW_MOVIES)
             .setContentTitle(movie.title)
