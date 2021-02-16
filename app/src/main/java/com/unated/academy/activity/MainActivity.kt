@@ -1,6 +1,8 @@
 package com.unated.academy.activity
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -30,17 +32,40 @@ class MainActivity : AppCompatActivity(),
                             R.id.container,
                             FragmentMoviesList.newInstance(configuration)
                         )
+
+                        if (intent != null) handleIntent(intent)
                     }
                 })
         }
     }
 
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        if (intent != null) handleIntent(intent)
+    }
+
     override fun goToDetails(id: Int) {
-        viewModel.configuration.value?.let { configuration -> replaceFragment(R.id.container, FragmentMoviesDetails.newInstance(id, configuration)) }
+        viewModel.configuration.value?.let { configuration ->
+            replaceFragment(
+                R.id.container,
+                FragmentMoviesDetails.newInstance(id, configuration)
+            )
+        }
     }
 
     override fun goToMain() {
         popFragment()
+    }
+
+    private fun handleIntent(intent: Intent) {
+        when (intent.action) {
+            Intent.ACTION_VIEW -> {
+                val id = intent.data?.lastPathSegment?.toIntOrNull()
+                if (id != null) {
+                    goToDetails(id)
+                }
+            }
+        }
     }
 }
 
