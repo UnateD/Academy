@@ -1,22 +1,19 @@
 package com.unated.academy
 
-import android.content.Context
 import com.unated.academy.data.AppDatabase
 import com.unated.academy.data.Genre
 import com.unated.academy.data.Movie
 import com.unated.academy.data.MovieDetails
 
-class MoviesRepository(context: Context) {
-
-    private val appDb = AppDatabase.create(context)
-    private val notifications: INotifications = Notifications(context)
-
-    init {
-        notifications.initialize()
-    }
+class MoviesRepository(var appDb: AppDatabase) {
 
     suspend fun getMoviesLocal(): List<Movie> {
         return appDb.dao.getMovies()
+    }
+
+    suspend fun getRemoteForWorker() : Movie {
+        getRemoteMovies(1)
+        return appDb.dao.getMax()
     }
 
     suspend fun getRemoteMovies(page: Int): List<Movie> {
@@ -32,7 +29,6 @@ class MoviesRepository(context: Context) {
         }
         if(response.page == 1) {
             appDb.dao.setMovies(response.results)
-            notifications.showNotification(appDb.dao.getMax())
         }
 
         return response.results
