@@ -2,6 +2,7 @@ package com.unated.academy.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -44,12 +45,22 @@ class MainActivity : AppCompatActivity(),
         if (intent != null) handleIntent(intent)
     }
 
-    override fun goToDetails(id: Int) {
-        viewModel.configuration.value?.let { configuration ->
-            replaceFragment(
-                R.id.container,
-                FragmentMoviesDetails.newInstance(id, configuration)
-            )
+    override fun goToDetails(id: Int, sharedView: View?) {
+        if (sharedView == null) {
+            viewModel.configuration.value?.let { configuration ->
+                replaceFragment(
+                    R.id.container,
+                    FragmentMoviesDetails.newInstance(id, configuration)
+                )
+            }
+        } else {
+            viewModel.configuration.value?.let { configuration ->
+
+                val transaction = supportFragmentManager.beginTransaction().replace(R.id.container, FragmentMoviesDetails.newInstance(id, configuration))
+                transaction.addSharedElement(sharedView, sharedView.transitionName)
+                transaction.addToBackStack(null)
+                transaction.commit()
+            }
         }
     }
 
@@ -62,7 +73,7 @@ class MainActivity : AppCompatActivity(),
             Intent.ACTION_VIEW -> {
                 val id = intent.data?.lastPathSegment?.toIntOrNull()
                 if (id != null) {
-                    goToDetails(id)
+                    goToDetails(id, null)
                 }
             }
         }

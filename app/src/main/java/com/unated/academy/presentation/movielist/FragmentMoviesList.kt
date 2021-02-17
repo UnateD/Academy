@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
+import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -55,6 +56,9 @@ class FragmentMoviesList : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        postponeEnterTransition()
+        view.doOnPreDraw { startPostponedEnterTransition() }
+
         viewModel =
             ViewModelProvider(this, appComponent().getFactory())[MoviesViewModel::class.java]
 
@@ -76,8 +80,8 @@ class FragmentMoviesList : Fragment() {
     }
 
     private var listener = object : MovieClickListener {
-        override fun onMovieClicked(id: Int) {
-            navigationListener?.goToDetails(id)
+        override fun onMovieClicked(id: Int, sharedView: View) {
+            navigationListener?.goToDetails(id, sharedView)
         }
     }
 
@@ -95,5 +99,5 @@ class FragmentMoviesList : Fragment() {
 }
 
 interface MovieClickListener {
-    fun onMovieClicked(id: Int)
+    fun onMovieClicked(id: Int, sharedView: View)
 }

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
+import androidx.core.view.ViewCompat
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -18,6 +19,7 @@ import com.unated.academy.R
 import com.unated.academy.data.Configuration
 import com.unated.academy.data.Movie
 import com.unated.academy.presentation.movielist.MovieClickListener
+import kotlinx.android.synthetic.main.item_movie_list.view.*
 
 class MoviesAdapter(var configuration: Configuration, var listener: MovieClickListener) :
     PagedListAdapter<Movie, MoviesAdapter.BaseViewHolder>(MovieDiffUtilCallback) {
@@ -45,7 +47,7 @@ class MoviesAdapter(var configuration: Configuration, var listener: MovieClickLi
         if (holder is MovieViewHolder) {
             getItem(position)?.let { movie ->
                 holder.bind(movie)
-                holder.itemView.setOnClickListener { listener.onMovieClicked(movie.id) }
+                holder.itemView.setOnClickListener { listener.onMovieClicked(movie.id, holder.itemView.iv_cover) }
             }
         }
     }
@@ -62,6 +64,7 @@ class MoviesAdapter(var configuration: Configuration, var listener: MovieClickLi
         private val tvDuration: TextView = itemView.findViewById(R.id.tv_duration)
 
         fun bind(data: Movie) {
+            ViewCompat.setTransitionName(ivCover, "image_cover_${data.id}")
             Glide.with(ivCover)
                 .load("${configuration.images.base_url}/${configuration.images.poster_sizes.last()}/${data.poster}")
                 .apply(

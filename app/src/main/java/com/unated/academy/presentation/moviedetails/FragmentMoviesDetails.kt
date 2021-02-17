@@ -2,8 +2,10 @@ package com.unated.academy.presentation.moviedetails
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.provider.CalendarContract
+import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +17,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.unated.academy.R
 import com.unated.academy.appComponent
 import com.unated.academy.data.Configuration
@@ -50,6 +56,12 @@ class FragmentMoviesDetails : Fragment() {
         navigationListener = null
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        postponeEnterTransition()
+        sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move);
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -70,6 +82,10 @@ class FragmentMoviesDetails : Fragment() {
         rvActors = view.findViewById(R.id.rv_actors)
         ivHeader = view.findViewById(R.id.iv_header)
 
+        val movieId = arguments?.getInt(EXTRA_MOVIE_ID, 0)
+
+        ivHeader?.transitionName = "image_cover_${movieId}"
+
         viewModel =
             ViewModelProvider(this, appComponent().getFactory())[MovieDetailsViewModel::class.java]
 
@@ -83,7 +99,7 @@ class FragmentMoviesDetails : Fragment() {
         viewModel.movie.observe(viewLifecycleOwner, { fillViews(it) })
 
         configuration = arguments?.getSerializable(EXTRA_CONFIGURATION) as Configuration
-        arguments?.getInt(EXTRA_MOVIE_ID, 0)?.let { viewModel.getMovie(it) }
+        movieId?.let { viewModel.getMovie(it) }
     }
 
     private fun schedule() {
@@ -110,6 +126,28 @@ class FragmentMoviesDetails : Fragment() {
         tvStoryline?.text = movie.overview
         Glide.with(ivHeader!!)
             .load("${configuration.images.base_url}/${configuration.images.poster_sizes.last()}/${movie.poster}")
+            .addListener(object: RequestListener<Drawable> {
+                override fun onResourceReady(
+                    resource: Drawable?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    dataSource: DataSource?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    startPostponedEnterTransition()
+                    ivHeader!!.setImageDrawable(resource)
+                    return true
+                }
+
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    return true
+                }
+            })
             .into(ivHeader!!)
     }
 
